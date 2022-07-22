@@ -1,16 +1,16 @@
 
 /*
-This code is in SQL language configured in SAS environment
-so that all SQL code are in between the proc sql; and  run; statements.
-The other lines of code are in SAS language or Macro
+This code is in SQL language in a SAS environment
+For this reason the SQL code is in between the proc sql; and  run; statements.
+The other lines of code are in SAS language or SAS Macro language
 */
 
 /*
 
 Objective of the procedure:
 
-This procedure create a report with all POS onboarded ( i.e. terminals ) by
-Agent4U  - a sales agency of a big Bank -
+This procedure create a report of onboarderd P.O.S. ( i.e. point of sales terminals ) 
+by a network of sales agents of a big Bank .
 
 After report is created, is then sent in excel format by email
 
