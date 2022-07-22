@@ -1,37 +1,39 @@
+# SAS REPORT VIA EXCEL
 
-/*
-This code is in SQL language in a SAS environment
-For this reason the SQL code is in between the proc sql; and  run; statements.
-The other lines of code are in SAS language or SAS Macro language
-*/
+This code is in **SQL** language in a **SAS** environment.  
+For this reason the SQL code is in between the 
+**```proc sql;```** and  **```run;```** statements.  
+The other lines of code, out of those statements, are in **SAS** language.  
+The code with the **%** is a bit of **SAS Macro** language.
 
-/*
-
-Objective of the procedure:
+  
+  
+## Objective of the procedure:
 
 This procedure create a report of onboarderd P.O.S. ( i.e. point of sales terminals ) 
-by a network of sales agents of a big Bank .
-
-After report is created, is then sent in excel format by email
+by a network of sales agents of a big Bank .  
+After report is created, is then sent in excel format by email.  
 
 The excel  has 4 sheet
-    sheet 1 is the detailed report where
-    for each terminal ID shows infos on
-        merchant (VAT,name,adress, industry)
-        terminal (ID,type,installation/close/change date)
-        transaction (month, amount, number) column viewed
-    sheet 2 is a summary of total merchant, total store, total ternminal , total transaction, total terminal
-    sheet 3 is a summary of #terminal per store
-    sheet 4 is a summary of #terminal per merchant
+***
+>    - sheet 1 is the report where for each terminal ID the information detailed are  
+>      	
+>  		merchant information like *VAT, name, adress, industry*  
+>       terminal information like *ID, type, installation/close/change date*  
+>       *transaction amount and number* by *month* in a column view mode  
+>    - sheet 2 is a summary of total merchant, total store, total terminal , total transaction, total terminal
+>    - sheet 3 is a summary of #terminal per store
+>    - sheet 4 is a summary of #terminal per merchant
+  
+***
 
-*/
 
+## The code generating the report 
 
+Firts, in SAS, the code define a structure
+for format the months in a more comprehensive way when displayed. 
 
-/*
-define in SAS a  structure
-for better format months
-*/
+```sql
 proc format library = work ;
 	value MeseIt    
 		1='January'    
@@ -49,10 +51,12 @@ proc format library = work ;
 		OTHER =' '
 ;run;   
 options  fmtsearch=(work);
+```
 
-/*
-Loads all POS onboarded by the sales network
-*/
+Loads all terminal that are onboarded by the sales network
+
+
+```sql
 proc sql;
 create table a4u as
 select * 
@@ -64,28 +68,31 @@ select *
 	LEFT JOIN MKT_RO.TBMK2_TP_CANALE_CONV_ISP t2 ON (t1.ID_TP_CANALE_CONV = t2.ID_TP_CANALE_CONV)
 	where t1.ID_TP_CANALE_CONV=14;
 quit;
+```
 
-/*
-Simple check of number ot terminla by type , for check pourpose
-*/
+Simple check of the number of terminals by type , only for check pourpose
+
+```sql
 proc freq data=a4u order=internal ;
 	tables te_tipologia_pos  /nocol nocum norow nopercent missing   ;
 	format attivazione monyy.
 ;run;
+```
 
-/*
-Display number of terminal activated by year and channel , for checking that the channel are the good ones
-*/
+Display number of terminal activated by month/year and channel , only for checking that the channel are the good ones.
+
+```sql
 proc freq data=a4u order=internal ;
 	tables attivazione*te_CANALE  /nocol nocum norow nopercent missing out=attivazioni ;
 	format attivazione monyy.;
 ;run;
+```
 
-/*
-Creates a table with the mercant categories codes (mcc) vs. industies
+Creates a table with the mercant categories codes (mcc) vs. industries.  
 This information will be diplayed into the final report 
 where the mcc will be substituted by the more comprehensive industries 
-*/
+
+```sql
 PROC SQL;
    CREATE TABLE WORK.MCC AS 
    SELECT DISTINCT t1.CO_ESE_SICC, 
@@ -96,12 +103,13 @@ PROC SQL;
 	  left join cvm_acq.br_MCC_VERTICALI vert on vert.mcc=t1.co_Ese_sicc
       ORDER BY t1.CO_ESE_SICC;
 QUIT;
+```
 
-/* 
 Table with customer master data and POS info 
 like  merchant name/store/address 
 like  activation/closing/substitution date  
-*/
+
+```sql
 proc sql;
 	create table work.start_pos as 
 		select distinct  t2.co_soc_piva as Cliente__Partita_IVA
@@ -144,10 +152,11 @@ proc sql;
 				left join MCC mcc on t2.co_Ese_sicc = mcc.co_Ese_sicc
 		order by t1.DT_POS_ATT;
 quit;
+```
 
-/*
 Retrive terminals types
-*/
+
+```sql
 proc sql;
 create table tipo_pos as 
 	select distinct dwh.co_term_id , dwh.te_soluzione_macro from DMCVM_RO.TBCVM_ACQ_POS_DD dwh , start_pos pos
@@ -166,8 +175,11 @@ from start_pos group by co_book order by co_book;
 
 proc print data=posA4U_input;run; 
 proc print data=posA4U_join_merchant;run; 
+```
 
-/* Create table with terminals transaction  */
+ Create table with terminals transaction  
+
+```sql
 proc sql;
 	create table work.start_mov as 
 		select 	t1.CO_ESE_PA
@@ -184,20 +196,23 @@ proc sql;
 		where co_aamm > 202012 and co_aamm<= 202204
 	group by t1.co_ese_pa, t1.co_term_id, t1.te_insegna_ese,t1.k_piva,mese
 ;quit;
+```
 
-/*
-Star building code for shifting transacion 
+Star building code for shifting transaction 
 
-from row view 
+> from row view 
+>
+>> POS month1 total_transaction  
+>> ID1 **month1** total_transaction  
+>> ID1 **month2** total_transaction  
+>> ID1 **monthn** total_transaction  
+> 
+> to column VIEW
+> 
+>> POS  **month1** **month2** **monthn**  
+>> ID1  total_trx  total_trx  total_trx   
 
-POS month1 total_transaction
-POS month2 total_transaction
-POS monthx total_transaction
-
-to column VIEW
-
-POS month1_total_transaction month2_total_transaction month3_total_transaction
-*/
+```sql
 proc sort data=start_mov  ;
 	by   K_PIVA co_ese_pa  co_term_id mese   ;
 ;run;
@@ -208,8 +223,11 @@ proc transpose data=start_mov out=mov_transp prefix=m;
 	var  nu_transazioni va_transato ;
 	format nu_transazioni va_transato  commax20.;
 ;run;
+```
 
-/*... prepare the COLUMNS sort */
+... prepare the COLUMNS sort 
+
+```sql
 proc sql;
 describe table mov_transp;
 ;quit;
@@ -234,16 +252,23 @@ data correggi_colonne;
 	colonne_ordinate =catx(' ' , of col[*]);
 	drop i p l;
 ;run;
-/*end column sort */
+```
 
-/*start transactions kpi */
+end column sort.
+
+Start building transactions kpi 
+
+```sql
 data _mov _num;
 	SET mov_transp;
 	if _NAME_='va_transato' then output _mov;
 	if _NAME_='nu_transazioni' then output _num;
 ;run;
+```
 
-/*arrange transaction and operation columns */
+then retrive transaction and operation columns structure information
+
+```sql
 proc sql;
 describe table _num;
 ;quit;
@@ -274,32 +299,46 @@ proc datasets library = work nolist;
    modify _mov;
    rename &list_movimenti;
 quit;
+```
 
-/*put  transaction and operation together*/
+Put transaction and operation toghether
+
+```sql
 proc sql;
 	create table _totale as 
 	select a.*, b.* from _mov a inner join _num b on a.k_piva=b.k_piva and a.co_ese_pa=b.co_ese_pa and a.co_term_id=b.co_term_id
 	order by k_PIVA, co_ese_pa, co_term_id;
 ;run;
+```
 
-/*some  makeup ...*/
-/*sorted operation columns  */
+Staring some make up for new table structure  
+
+Retrive sorted operation columns  
+
+```sql
 proc sql; select tranwrd(colonne_ordinate,"m","ope_" ) into :lista_operazioni_ordinate from correggi_colonne;quit;
-/*sorted transaction columns */
+```
+
+Retrive sorted transaction columns
+
+```sql
 proc sql; select tranwrd(colonne_ordinate,"m","neg_" ) into :lista_negoziato_ordinate from correggi_colonne;quit;
 
-%put &lista_operazioni_ordinate;
-%put &lista_negoziato_ordinate;
+/*for simple check of the ordered  columns,  printing on console log */
+%put &lista_operazioni_ordinate; 
+/*for simple check of the ordered  columns,  printing on console log */
+%put &lista_negoziato_ordinate; 
 
 data totale_movimenti;
 	retain k_piva co_ese_pa co_term_id &lista_operazioni_ordinate &lista_negoziato_ordinate;
 	set _totale ;
 	drop _name_;
 ;run;
+```
 
-/*
 End building code for the column view of transactions
-*/
+
+```sql
 proc sql;
 	create table work.unione as 
 		select pos.*, kpi.* 
@@ -307,10 +346,17 @@ proc sql;
 			left join work.totale_movimenti kpi 
             on (pos.CO_ESE_PA = kpi.CO_ESE_PA)  and (pos.CO_TERM_ID = kpi.CO_TERM_ID)  and (pos.k_piva = kpi.K_PIVA)
 ;quit;
+```
 
-/*if there are treminal with transaction the  ...*/
+If there are terminal with transaction then  ...
+
+```sql
 proc sql noprint;   select    count(*)   into   :kpiCount  from   work.totale_movimenti   ;  quit;
-/* ... create a sum overall the months*/
+```
+
+... create a total sum over all months
+
+```sql
 	data POS_A4U;
 	set unione ;
 	%if &kpiCount. > 0 %then %do; 
@@ -322,8 +368,11 @@ proc sql noprint;   select    count(*)   into   :kpiCount  from   work.totale_mo
 		format totale: commax20.;
 	%END;
 ;run;
+```
 
-/*final step, bring all together*/
+final step, bring all together
+
+```sql
 proc sql  noprint;
 	select count (distinct co_ese_pa) into :ese_movimenti  from totale_movimenti;
 	select count (distinct co_term_id) into :termid_movimenti  from totale_movimenti;
@@ -331,8 +380,11 @@ proc sql  noprint;
 	select count (distinct co_ese_pa) into :merchisp_coesepa_trovate from POS_A4U;
 	select count (distinct co_term_id) into :merchisp_cotermid_trovati from POS_A4U;
 ;run;
+```
 
-/* some main values of the collected data */
+some main values of the collected data
+
+```sql
 data controlli ;
 	merchisp_piva_trovate=&merchisp_piva_trovate.; 
 	merchisp_coesepa_trovate=&merchisp_coesepa_trovate.; 
@@ -341,8 +393,11 @@ data controlli ;
 	termid_movimenti=&termid_movimenti.; 
 run;
 proc print data=controlli;run;
+```
 
-/* .. and the go, buoldthe excle fiel with all the reports*/
+... and the go, build the excle file with all the reports in separted sheets
+
+```sql
 %let fileTimeStamp = %sysfunc(date(), yymmddn8.)%sysfunc(putc(%sysfunc(time(), b8601TM6.), $4.)) ;
 %put &fileTimeStamp.;
 
@@ -353,10 +408,11 @@ proc datasets library=work details;
    copy out=x;
       select  pos_a4u CONTROLLI posA4U_input posA4U_join_merchant;
 quit;
+```
 
-/* 
 send the email with the attached excel report
-*/
+
+```sql
 filename piccione  email
 to= ("alessandro.bruni@nexi.it" "bruni.alessandro@gmail.com")
 replyto= ("alessandro.bruni@nexi.it" )
@@ -378,3 +434,4 @@ put "<ul>Numero piva elaborate dalla TBMK2_ACQ_MERCHANT_ISP_DD : <strong>&merchi
 
 quit;
 
+```
