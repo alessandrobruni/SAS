@@ -1,3 +1,6 @@
+![SAS](https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/SAS_logo_horiz.svg/320px-SAS_logo_horiz.svg.png)
+![Excel](https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Microsoft_Excel_2013-2019_logo.svg/110px-Microsoft_Excel_2013-2019_logo.svg.png)
+![mail](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Microsoft_Outlook_2013-2019_logo.svg/110px-Microsoft_Outlook_2013-2019_logo.svg.png)
 # SAS REPORT VIA EXCEL
 
 This code is in **SQL** language in a **SAS** environment.  
@@ -382,7 +385,7 @@ proc sql  noprint;
 ;run;
 ```
 
-some main values of the collected data
+Collecting some main values of the report
 
 ```sql
 data controlli ;
@@ -395,7 +398,7 @@ run;
 proc print data=controlli;run;
 ```
 
-... and the go, build the excle file with all the reports in separted sheets
+... and finally start to build the excel file with all the reports in separted sheets
 
 ```sql
 %let fileTimeStamp = %sysfunc(date(), yymmddn8.)%sysfunc(putc(%sysfunc(time(), b8601TM6.), $4.)) ;
@@ -410,7 +413,7 @@ proc datasets library=work details;
 quit;
 ```
 
-send the email with the attached excel report
+Here send the email with the attached excel report
 
 ```sql
 filename piccione  email
