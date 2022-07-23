@@ -1,6 +1,6 @@
 ﻿![SAS](https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/SAS_logo_horiz.svg/320px-SAS_logo_horiz.svg.png)  
 
-# SAS - Analysis of the activations of a new service payment over a year 
+# SAS - Analysis activations of a new service payment over a year 
 
 This code is in **SQL** language in a **SAS** environment.  
 For this reason the SQL code is in between the 
