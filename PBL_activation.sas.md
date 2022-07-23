@@ -123,10 +123,12 @@ PROC SQL;
 	select count(chiave_pv) as pv, count(distinct chiave_pv) as distinct_pv from PBL_2020;
 QUIT;
 ```
+![Excel](https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Microsoft_Excel_2013-2019_logo.svg/110px-Microsoft_Excel_2013-2019_logo.svg.png)    
 
-After this , the table is exported in Excel format , and analyzed to create the document below.   
+After this , the table is exported in Excel format, and analyzed to create the document below.   
 
-![Excel](https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Microsoft_Excel_2013-2019_logo.svg/110px-Microsoft_Excel_2013-2019_logo.svg.png)  
+![PowerPoint](https://upload.wikimedia.org/wikipedia/commons/1/16/Microsoft_PowerPoint_2013-2019_logo.svg)
+
 
 
 ![Activataion](/PBL_20201114_1.png)
