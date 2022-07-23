@@ -1,11 +1,10 @@
-﻿# SAS ANALYSIS OF PRODUCT ACTIVATION
+﻿![SAS](https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/SAS_logo_horiz.svg/320px-SAS_logo_horiz.svg.png)  
+
+# SAS - Analysis of the activations of a new service payment over a year 
 
 This code is in **SQL** language in a **SAS** environment.  
 For this reason the SQL code is in between the 
 **```proc sql;```** and  **```run;```** statements.  
-The other lines of code, out of those statements, are in **SAS** language.  
-The code with the **%** is a bit of **SAS Macro** language.
-
   
   
 ## Objective of the analysis:
@@ -124,4 +123,13 @@ PROC SQL;
 	select count(chiave_pv) as pv, count(distinct chiave_pv) as distinct_pv from PBL_2020;
 QUIT;
 ```
+
+After this , the table is exported in Excel format , and analyzed to create the document below.   
+
+![Excel](https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Microsoft_Excel_2013-2019_logo.svg/110px-Microsoft_Excel_2013-2019_logo.svg.png)  
+
+
+![Activataion](/PBL_20201114_1.png)
+![Activataion](/PBL_20201114_2.png)
+![Activataion](/PBL_20201114_3.png)
 
