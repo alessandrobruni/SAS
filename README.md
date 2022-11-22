@@ -9,9 +9,9 @@ The service had some difficulties in IT releasing, but overall the feedback from
 At the end of the year it was necessary to understand
 
 > * how the activations were distributed over the banks
-* how activation were distributed over customare segmentation
-* the customer are clustered by their year transaction, the higher the transaction the bigger the customare
-* the analysis confirmed that the product was very appealing to micro merchant (51% of the customer are micro merchant)
-* how much the service is used after activation
-* who really uses the service
-* how was the regional distribution
+> * how activation were distributed over customare segmentation
+> * the customer are clustered by their year transaction, the higher the transaction the bigger the customare
+> * the analysis confirmed that the product was very appealing to micro merchant (51% of the customer are micro merchant)
+> * how much the service is used after activation
+> * who really uses the service
+> * how was the regional distribution
